@@ -6,9 +6,9 @@ import { revealUp, staggerContainer, staggerItem, viewportOnce } from "../lib/mo
 import WhatsAppButton from "../components/WhatsAppButton";
 import { IconArrowRight } from "../components/Icons";
 
-const dotColor: Record<ProjectDetail["type"], string> = {
-  LAB: "bg-signal",
-  CLIENT: "bg-accent-glow",
+const textColor: Record<ProjectDetail["type"], string> = {
+  LAB: "text-signal",
+  CLIENT: "text-accent-glow",
 };
 
 const typeLabel: Record<ProjectDetail["type"], string> = {
@@ -36,7 +36,7 @@ function ListBlock({ label, items }: { label: string; items: string[] }) {
       <ul className="space-y-3">
         {items.map((item, i) => (
           <li key={i} className="flex gap-3 leading-relaxed text-text-muted">
-            <span className="mt-2.5 h-1 w-1 flex-shrink-0 rounded-full bg-accent-glow" />
+            <span className="text-text-muted/50">–</span>
             <span>{item}</span>
           </li>
         ))}
@@ -66,12 +66,9 @@ export default function ProjectDetailPage() {
         </Link>
 
         <motion.div variants={revealUp} initial="hidden" animate="show">
-          <div className="mb-5 flex flex-wrap items-center gap-4 text-xs text-text-muted">
-            <span>{project.fileRef}</span>
-            <span className="flex items-center gap-2">
-              <span className={`h-1.5 w-1.5 rounded-full ${dotColor[project.type]}`} />
-              {typeLabel[project.type]}
-            </span>
+          <div className="mb-5 flex flex-wrap items-center gap-4 text-xs">
+            <span className="text-text-muted">{project.fileRef}</span>
+            <span className={`font-medium ${textColor[project.type]}`}>{typeLabel[project.type]}</span>
           </div>
           <h1 className="text-balance text-3xl font-semibold leading-tight tracking-tight text-text sm:text-5xl">
             {project.title}

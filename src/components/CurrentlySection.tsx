@@ -12,11 +12,7 @@ export default function CurrentlySection() {
         viewport={viewportOnce}
         className="mx-auto flex max-w-6xl flex-col items-start gap-3 px-5 sm:flex-row sm:items-center sm:gap-6 sm:px-8"
       >
-        <span className="font-mono-tight flex items-center gap-2 text-xs text-text-muted">
-          <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-signal opacity-60" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-signal" />
-          </span>
+        <span className="font-mono-tight border-l-2 border-border-strong pl-3 text-xs text-text-muted">
           {currently.label}
         </span>
         <p className="text-balance text-text-muted">{currently.text}</p>

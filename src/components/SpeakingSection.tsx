@@ -59,9 +59,8 @@ export default function SpeakingSection() {
               <motion.li
                 key={topic}
                 variants={staggerItem}
-                className="flex items-baseline gap-3 border-t border-border py-3 text-text"
+                className="border-t border-border py-3 text-text"
               >
-                <span className="h-1 w-1 flex-shrink-0 rounded-full bg-accent-glow" />
                 {topic}
               </motion.li>
             ))}

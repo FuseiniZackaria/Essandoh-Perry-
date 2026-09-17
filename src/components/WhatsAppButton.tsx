@@ -13,7 +13,7 @@ const base =
   "group inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-2 focus-visible:outline-offset-2";
 
 const variants: Record<NonNullable<WhatsAppButtonProps["variant"]>, string> = {
-  solid: "bg-accent text-white hover:bg-accent-glow hover:shadow-[0_0_24px_-4px_var(--color-accent-glow)]",
+  solid: "bg-accent text-white hover:bg-accent-glow",
   outline: "border border-border-strong text-text hover:border-accent-glow hover:text-white",
   ghost: "text-text-muted hover:text-text",
 };

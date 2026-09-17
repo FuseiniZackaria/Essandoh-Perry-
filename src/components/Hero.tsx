@@ -34,20 +34,6 @@ export default function Hero() {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-bg from-10% via-bg/75 via-45% to-bg/10" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-bg via-bg/5 to-transparent" />
 
-      {/* Status readout — grounded in the SOC-dashboard visual language rather than decorative */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.5 }}
-        className="font-mono-tight absolute right-5 top-24 z-10 flex items-center gap-2 rounded-full border border-border-strong bg-bg/60 px-3.5 py-2 text-[11px] text-text-muted backdrop-blur-sm sm:right-8 sm:top-28"
-      >
-        <span className="relative flex h-1.5 w-1.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-glow opacity-60" />
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent-glow" />
-        </span>
-        open to engagements
-      </motion.div>
-
       {/* Content — anchored to the lower-left third, cinematic poster placement */}
       <div className="relative z-10 flex min-h-screen flex-col justify-end px-5 pb-16 pt-32 sm:px-8 sm:pb-24 sm:pt-40">
         <div className="mx-auto w-full max-w-6xl">

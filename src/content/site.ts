@@ -464,4 +464,5 @@ export const finalCta = {
 export const footer = {
   tagline: "Cybersecurity · AI · Speaking",
   copyright: `© ${new Date().getFullYear()} Essandoh Perry. All rights reserved.`,
+  developer: { name: "CodeCraft GH", url: "https://codecraft-wheat.vercel.app/" },
 };

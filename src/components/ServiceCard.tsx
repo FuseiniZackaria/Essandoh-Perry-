@@ -14,7 +14,7 @@ export default function ServiceCard({ title, description, index }: ServiceCardPr
       variants={staggerItem}
       whileHover={{ y: -6, scale: 1.015 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
-      className="group relative overflow-hidden rounded-3xl border border-border bg-card/20 p-8 transition-colors duration-300 hover:border-border-strong hover:bg-card/50 hover:shadow-[0_16px_40px_-16px_rgba(37,99,235,0.3)] sm:p-10"
+      className="group relative overflow-hidden rounded-3xl border border-border bg-card/20 p-8 transition-colors duration-300 hover:border-border-strong hover:bg-card/50 hover:shadow-xl hover:shadow-black/30 sm:p-10"
     >
       <span
         aria-hidden

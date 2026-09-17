@@ -24,8 +24,16 @@ export default function Footer() {
         </a>
       </div>
 
-      <div className="mx-auto mt-10 max-w-6xl border-t border-border px-5 pt-6 sm:px-8">
+      <div className="mx-auto mt-10 flex max-w-6xl flex-col gap-2 border-t border-border px-5 pt-6 sm:flex-row sm:items-center sm:justify-between sm:px-8">
         <p className="font-mono-tight text-[11px] text-text-muted">{footer.copyright}</p>
+        <a
+          href={footer.developer.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-mono-tight text-[11px] text-text-muted transition-colors hover:text-text"
+        >
+          Developed by {footer.developer.name}
+        </a>
       </div>
     </footer>
   );
