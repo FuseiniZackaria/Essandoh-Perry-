@@ -48,8 +48,8 @@ export default function Navbar() {
           scrolled ? "bg-bg/80 backdrop-blur-md border-b border-border" : "bg-transparent"
         }`}
       >
-        <Link to="/" className="flex items-center gap-2.5">
-          <img src="/images/logo-mark.png" alt="" className="h-7 w-7" />
+        <Link to="/" className="flex items-center gap-3">
+          <img src="/images/logo-mark.png" alt="" className="h-40 w-40 sm:h-44 sm:w-44" />
           <span className="font-mono-tight text-sm tracking-wide text-text">{personal.name}</span>
         </Link>
 
