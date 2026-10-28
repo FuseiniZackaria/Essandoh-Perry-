@@ -65,7 +65,20 @@ export default function ChatWidget() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: history.filter((message) => message.content !== greeting) }),
       });
-      if (!response.ok) throw new Error("Chat request failed");
+      if (!response.ok) {
+        const failure: unknown = await response.json().catch(() => null);
+        if (
+          response.status === 429 &&
+          failure && typeof failure === "object" &&
+          "code" in failure && failure.code === "rate_limited" &&
+          "error" in failure && typeof failure.error === "string"
+        ) {
+          const errorMessage = failure.error;
+          setMessages((current) => [...current, { role: "assistant", content: errorMessage }]);
+          return;
+        }
+        throw new Error("Chat request failed");
+      }
       const data: unknown = await response.json();
       if (!data || typeof data !== "object" || !("reply" in data) || typeof data.reply !== "string") throw new Error("Invalid response");
       const replyText = data.reply;

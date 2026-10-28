@@ -24,7 +24,7 @@ type GeminiContent = { role: "model" | "user"; parts: GeminiPart[] };
 type AlertKind = "booking" | "followup";
 
 class GeminiApiError extends Error {
-  constructor(readonly status: number, readonly providerCode: string) {
+  constructor(readonly status: number, readonly providerCode: string, readonly retryable: boolean) {
     super("Gemini API request failed");
   }
 }
@@ -34,8 +34,10 @@ const MAX_MESSAGES = 24;
 const MAX_MESSAGE_LENGTH = 4000;
 const MAX_CONVERSATION_LENGTH = 24000;
 const MAX_BODY_LENGTH = 32000;
-const RATE_LIMIT = 12;
+const RATE_LIMIT = 30;
 const RATE_WINDOW_MS = 60_000;
+const GEMINI_MAX_ATTEMPTS = 3;
+const GEMINI_TIMEOUT_MS = 12_000;
 
 const tools = [
   {
@@ -70,6 +72,8 @@ const tools = [
     },
   },
 ];
+
+const greeting = "Hello, my name is Elsie, Perry's personal AI assistant. How may I help you today?";
 
 function reply(res: Response, status: number, body: unknown) {
   res.status(status).json(body);
@@ -221,6 +225,10 @@ async function runTool(tool: ToolUse): Promise<string> {
 async function callGemini(messages: Message[], system: string): Promise<{ reply: string; whatsappHandoff: boolean }> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("Chat service is not configured");
+  const lastMessage = messages[messages.length - 1]?.content.trim() ?? "";
+  if (messages.length === 1 && /^(hi|hello|hey|akwaaba|good morning|good afternoon|good evening)[!.?,\s]*$/i.test(lastMessage)) {
+    return { reply: "Hi! What would you like help with today?", whatsappHandoff: false };
+  }
   const history: GeminiContent[] = messages.map((message) => ({
     role: message.role === "assistant" ? "model" : "user",
     parts: [{ text: message.content }],
@@ -229,24 +237,7 @@ async function callGemini(messages: Message[], system: string): Promise<{ reply:
   let whatsappHandoff = false;
 
   for (let turn = 0; turn < 6; turn += 1) {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
-      method: "POST",
-      headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: system }] },
-        contents: history,
-        tools: [{ functionDeclarations: tools }],
-        generationConfig: { maxOutputTokens: 1200 },
-      }),
-    });
-    if (!response.ok) {
-      const errorBody: unknown = await response.json().catch(() => null);
-      const providerError = isRecord(errorBody) && isRecord(errorBody.error) ? errorBody.error : {};
-      const providerCode = typeof providerError.status === "string"
-        ? providerError.status
-        : typeof providerError.code === "number" ? String(providerError.code) : "UNKNOWN";
-      throw new GeminiApiError(response.status, providerCode);
-    }
+    const response = await requestGemini(apiKey, model, system, history);
     const data: unknown = await response.json();
     if (!isRecord(data) || !Array.isArray(data.candidates)) throw new Error("Unexpected chat provider response");
     const candidate = data.candidates[0];
@@ -259,9 +250,11 @@ async function callGemini(messages: Message[], system: string): Promise<{ reply:
         : [];
     });
     if (!toolUses.length) {
-      const answer = content.parts.filter((part) => typeof part.text === "string").map((part) => part.text).join("\n").trim();
+      let answer = content.parts.filter((part) => typeof part.text === "string").map((part) => part.text).join("\n").trim();
       if (!answer) throw new Error("Empty chat provider response");
-      return { reply: answer.slice(0, 8000), whatsappHandoff };
+      if (answer === greeting) answer = "Hi! What would you like help with today?";
+      else if (answer.startsWith(`${greeting}\n`)) answer = answer.slice(greeting.length).trim();
+      return { reply: (answer || "Hi! What would you like help with today?").slice(0, 8000), whatsappHandoff };
     }
     history.push(content);
     const results: GeminiPart[] = [];
@@ -278,6 +271,55 @@ async function callGemini(messages: Message[], system: string): Promise<{ reply:
   return { reply: "I have passed your request along where possible. If you need more help, email info@essandohperry.com.", whatsappHandoff };
 }
 
+async function requestGemini(apiKey: string, model: string, system: string, history: GeminiContent[]): Promise<globalThis.Response> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
+  const body = JSON.stringify({
+    systemInstruction: { parts: [{ text: system }] },
+    contents: history,
+    tools: [{ functionDeclarations: tools }],
+    generationConfig: { maxOutputTokens: 1200 },
+  });
+
+  for (let attempt = 1; attempt <= GEMINI_MAX_ATTEMPTS; attempt += 1) {
+    let response: globalThis.Response;
+    try {
+      response = await fetch(url, {
+        method: "POST",
+        headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
+        body,
+        signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
+      });
+    } catch (error) {
+      if (attempt === GEMINI_MAX_ATTEMPTS) {
+        console.error("Gemini network request failed", { errorName: error instanceof Error ? error.name : "UnknownError", attempts: attempt });
+        throw error;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 300 * 2 ** (attempt - 1)));
+      continue;
+    }
+
+    if (response.ok) return response;
+
+    const errorBody: unknown = await response.json().catch(() => null);
+    const providerError = isRecord(errorBody) && isRecord(errorBody.error) ? errorBody.error : {};
+    const providerCode = typeof providerError.status === "string"
+      ? providerError.status
+      : typeof providerError.code === "number" ? String(providerError.code) : "UNKNOWN";
+    const retryable = response.status === 408 || response.status === 429 || response.status >= 500;
+    if (retryable && attempt < GEMINI_MAX_ATTEMPTS) {
+      const retryAfter = Number(response.headers.get("Retry-After"));
+      const delay = Number.isFinite(retryAfter) && retryAfter > 0
+        ? Math.min(retryAfter * 1000, 2000)
+        : 300 * 2 ** (attempt - 1);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      continue;
+    }
+    throw new GeminiApiError(response.status, providerCode, retryable);
+  }
+
+  throw new Error("Gemini request attempts exhausted");
+}
+
 export default async function handler(req: Request, res: Response) {
   res.setHeader("Cache-Control", "no-store");
   if (req.method !== "POST") {
@@ -287,7 +329,10 @@ export default async function handler(req: Request, res: Response) {
   const contentLength = Number(getHeader(req, "content-length"));
   if (Number.isFinite(contentLength) && contentLength > MAX_BODY_LENGTH) return reply(res, 413, { error: "The conversation is too long. Please start a new message." });
   const ip = getHeader(req, "x-real-ip") || getHeader(req, "x-forwarded-for").split(",")[0]?.trim() || req.socket?.remoteAddress || "unknown";
-  if (rateLimited(ip)) return reply(res, 429, { error: "Too many requests. Please try again shortly." });
+  if (rateLimited(ip)) return reply(res, 429, {
+    code: "rate_limited",
+    error: "You've sent several messages in a short time. Please wait a minute and try again.",
+  });
   const messages = isRecord(req.body) ? validateMessages(req.body.messages) : null;
   if (!messages) return reply(res, 400, { error: "Please send a valid chat message." });
   try {
@@ -299,7 +344,15 @@ export default async function handler(req: Request, res: Response) {
     // Keep diagnostics free of API keys and visitor conversations. Use the status/code
     // in Vercel Function Logs to distinguish invalid credentials, model, quota, etc.
     if (error instanceof GeminiApiError) {
-      console.error("Gemini API request failed", { status: error.status, providerCode: error.providerCode });
+      console.error("Gemini API request failed", {
+        status: error.status,
+        providerCode: error.providerCode,
+        retryable: error.retryable,
+      });
+    } else if (error instanceof Error && error.message === "Chat service is not configured") {
+      console.error("Gemini API configuration error", { missing: "GEMINI_API_KEY" });
+    } else if (!(error instanceof Error && error.name === "AbortError")) {
+      console.error("Chat handler failed", { errorName: error instanceof Error ? error.name : "UnknownError" });
     }
     return reply(res, 503, { error: "Elsie is temporarily unavailable." });
   }
