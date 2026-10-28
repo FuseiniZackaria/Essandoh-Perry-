@@ -61,14 +61,14 @@ Update `personal.whatsappNumber` in `site.ts` (digits only, country code, no
 ## Elsie AI assistant
 
 The chat UI is mounted across the site. Its Vercel function is `api/chat.ts`;
-the Anthropic API key and all provider credentials are server-only. Never use
+the Gemini API key and all provider credentials are server-only. Never use
 a `VITE_` prefix for secrets. Configure these environment variables in the
 Vercel project settings (and in a local, untracked `.env` file when testing):
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
-| `ANTHROPIC_API_KEY` | Yes | Server-side Anthropic Messages API key |
-| `CLAUDE_MODEL` | No | Model override; defaults to `claude-sonnet-5-5` |
+| `GEMINI_API_KEY` | Yes | Server-side Google Gemini API key |
+| `GEMINI_MODEL` | No | Gemini model ID; defaults to `gemini-2.5-flash` |
 | `RESEND_API_KEY` | For email alerts | Resend API key for booking/follow-up emails |
 | `ALERT_FROM_EMAIL` | For email alerts | Verified sender address |
 | `ALERT_TO_EMAIL` | No | Alert recipient; defaults to `info@essandohperry.com` |

@@ -15,8 +15,12 @@ type Response = {
   setHeader: (name: string, value: string) => void;
 };
 type ToolUse = { id: string; name: string; input: Record<string, unknown> };
-type AnthropicBlock = { type: string; text?: string; id?: string; name?: string; input?: Record<string, unknown>; tool_use_id?: string; content?: string };
-type AnthropicMessage = { role: "assistant" | "user"; content: string | AnthropicBlock[] };
+type GeminiPart = {
+  text?: string;
+  functionCall?: { name: string; args?: Record<string, unknown> };
+  functionResponse?: { name: string; response: { result: string } };
+};
+type GeminiContent = { role: "model" | "user"; parts: GeminiPart[] };
 type AlertKind = "booking" | "followup";
 
 const rateLimits = new Map<string, { count: number; resetAt: number }>();
@@ -31,7 +35,7 @@ const tools = [
   {
     name: "submit_booking",
     description: "Record a consultation booking request and alert Perry. Call only after collecting all fields and the visitor confirms.",
-    input_schema: {
+    parameters: {
       type: "object",
       properties: {
         full_name: { type: "string" },
@@ -47,7 +51,7 @@ const tools = [
   {
     name: "flag_for_followup",
     description: "Alert Perry that a visitor needs personal follow-up (angry client, complex case, urgent security incident, payment intent).",
-    input_schema: {
+    parameters: {
       type: "object",
       properties: {
         name: { type: "string" },
@@ -166,7 +170,7 @@ async function sendAlert(kind: AlertKind, input: Record<string, unknown>): Promi
     : "The follow-up reminder was emailed to Perry's team. Tell the visitor exactly: I've passed your details to Perry, and he will follow up with you. Do not promise a response time beyond any specific approved booking guidance.";
 }
 
-  async function sendOptionalWhatsAppAlert(subject: string, alertText: string) {
+async function sendOptionalWhatsAppAlert(subject: string, alertText: string) {
   const token = process.env.WHATSAPP_TOKEN;
   const phoneId = process.env.WHATSAPP_PHONE_ID;
   const recipient = process.env.PERRY_WHATSAPP;
@@ -208,40 +212,55 @@ async function runTool(tool: ToolUse): Promise<string> {
   return "Unsupported action.";
 }
 
-async function callAnthropic(messages: Message[], system: string): Promise<{ reply: string; whatsappHandoff: boolean }> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+async function callGemini(messages: Message[], system: string): Promise<{ reply: string; whatsappHandoff: boolean }> {
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("Chat service is not configured");
-  const history: AnthropicMessage[] = messages.map((message) => ({ role: message.role, content: message.content }));
-  const model = process.env.CLAUDE_MODEL || "claude-sonnet-5-5";
+  const history: GeminiContent[] = messages.map((message) => ({
+    role: message.role === "assistant" ? "model" : "user",
+    parts: [{ text: message.content }],
+  }));
+  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
   let whatsappHandoff = false;
 
   for (let turn = 0; turn < 6; turn += 1) {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
       method: "POST",
-      headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model, max_tokens: 1200, system, messages: history, tools }),
+      headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: system }] },
+        contents: history,
+        tools: [{ functionDeclarations: tools }],
+        generationConfig: { maxOutputTokens: 1200 },
+      }),
     });
     if (!response.ok) throw new Error("Chat provider request failed");
     const data: unknown = await response.json();
-    if (!isRecord(data) || !Array.isArray(data.content)) throw new Error("Unexpected chat provider response");
-    const content = data.content as AnthropicBlock[];
-    const toolUses = content.filter((block) => block.type === "tool_use" && block.id && block.name && isRecord(block.input)) as ToolUse[];
+    if (!isRecord(data) || !Array.isArray(data.candidates)) throw new Error("Unexpected chat provider response");
+    const candidate = data.candidates[0];
+    if (!isRecord(candidate) || !isRecord(candidate.content) || !Array.isArray(candidate.content.parts)) throw new Error("No usable chat response");
+    const content = candidate.content as unknown as GeminiContent;
+    const toolUses: ToolUse[] = content.parts.flatMap((part) => {
+      const call = part.functionCall;
+      return call && typeof call.name === "string"
+        ? [{ id: `${turn}-${call.name}`, name: call.name, input: isRecord(call.args) ? call.args : {} }]
+        : [];
+    });
     if (!toolUses.length) {
-      const answer = content.filter((block) => block.type === "text" && typeof block.text === "string").map((block) => block.text).join("\n").trim();
+      const answer = content.parts.filter((part) => typeof part.text === "string").map((part) => part.text).join("\n").trim();
       if (!answer) throw new Error("Empty chat provider response");
       return { reply: answer.slice(0, 8000), whatsappHandoff };
     }
-    history.push({ role: "assistant", content });
-    const results: AnthropicBlock[] = [];
+    history.push(content);
+    const results: GeminiPart[] = [];
     for (const tool of toolUses) {
       const result = await runTool(tool);
       if (
         (tool.name === "submit_booking" && result.startsWith("The consultation request was emailed")) ||
         (tool.name === "flag_for_followup" && result.startsWith("The follow-up reminder was emailed"))
       ) whatsappHandoff = true;
-      results.push({ type: "tool_result", tool_use_id: tool.id, content: result });
+      results.push({ functionResponse: { name: tool.name, response: { result } } });
     }
-    history.push({ role: "user", content: results });
+    history.push({ role: "user", parts: results });
   }
   return { reply: "I have passed your request along where possible. If you need more help, email info@essandohperry.com.", whatsappHandoff };
 }
@@ -260,7 +279,7 @@ export default async function handler(req: Request, res: Response) {
   if (!messages) return reply(res, 400, { error: "Please send a valid chat message." });
   try {
     const system = await getSystemPrompt();
-    const result = await callAnthropic(messages, system);
+    const result = await callGemini(messages, system);
     const whatsappUrl = `https://wa.me/233540638308?text=${encodeURIComponent("Hi Perry's team, Elsie has helped me with a request. Please help me with the next steps.")}`;
     return reply(res, 200, { ...result, ...(result.whatsappHandoff ? { whatsappUrl } : {}) });
   } catch {
