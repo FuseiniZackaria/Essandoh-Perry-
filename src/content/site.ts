@@ -133,7 +133,7 @@ export const consultation = {
   steps: ["Chat with Elsie and share what you're working on.", "Choose an online or in-person consultation.", "Perry's team will email within 24 hours to confirm a date and time."],
   flexibility: "Scheduling is flexible. Share the times that work for you and the team will follow up by email.",
   primary: "Chat with Elsie",
-  email: "info@essandohperry.com",
+  email: "info@essandohperry.tech",
 };
 
 export interface CommunityItem { name: string; description: string; access: "free" | "paid"; price?: string }
@@ -515,6 +515,6 @@ export const finalCta = {
 export const footer = {
   tagline: "Practical AI · Cybersecurity · Speaking",
   copyright: `© ${new Date().getFullYear()} Essandoh Perry. All rights reserved.`,
-  email: "info@essandohperry.com",
+  email: "info@essandohperry.tech",
   developer: { name: "CodeCraft GH", url: "https://codecraft-wheat.vercel.app/" },
 };

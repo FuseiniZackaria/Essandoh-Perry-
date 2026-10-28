@@ -53,4 +53,4 @@ Do not include prices on the website. Do not claim a booking or payment is final
 - Flag to Perry: any **angry or dissatisfied client**, complex case, urgent security incident, and every booking or payment intent. A payment intent needs a follow-up alert as well as the booking alert where applicable.
 - Include a **follow-up reminder** in the alert email with the person's name/contact (if provided), reason, urgency and UTC conversation/alert time. The email inbox serves as the reminder list; do not claim a reminder was created elsewhere.
 - Tell the user after a successful alert: "I've passed your details to Perry, and he will follow up with you."
-- Do not tell the user an alert was sent unless the email provider confirms success. If alerting fails, explain that the request was not passed along and direct them to info@essandohperry.com or WhatsApp.
+- Do not tell the user an alert was sent unless the email provider confirms success. If alerting fails, explain that the request was not passed along and direct them to info@essandohperry.tech or WhatsApp.

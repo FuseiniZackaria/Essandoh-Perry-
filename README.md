@@ -71,7 +71,7 @@ Vercel project settings (and in a local, untracked `.env` file when testing):
 | `GEMINI_MODEL` | No | Gemini model ID; defaults to `gemini-3.5-flash-lite` |
 | `RESEND_API_KEY` | For email alerts | Resend API key for booking/follow-up emails |
 | `ALERT_FROM_EMAIL` | For email alerts | Verified sender address |
-| `ALERT_TO_EMAIL` | No | Alert recipient; defaults to `info@essandohperry.com` |
+| `ALERT_TO_EMAIL` | No | Alert recipient; defaults to `info@essandohperry.tech` |
 | `WHATSAPP_TOKEN` | Optional | WhatsApp Business API token |
 | `WHATSAPP_PHONE_ID` | Optional | WhatsApp Business phone number ID |
 | `PERRY_WHATSAPP` | Optional | Alert recipient phone number in international format |

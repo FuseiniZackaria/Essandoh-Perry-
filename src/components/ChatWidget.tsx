@@ -89,7 +89,7 @@ export default function ChatWidget() {
       }
     } catch {
       setError(true);
-      setMessages((current) => [...current, { role: "assistant", content: "I'm having trouble right now. You can email info@essandohperry.com or message Perry on WhatsApp." }]);
+      setMessages((current) => [...current, { role: "assistant", content: "I'm having trouble right now. You can email info@essandohperry.tech or message Perry on WhatsApp." }]);
     } finally {
       setIsSending(false);
     }

@@ -138,8 +138,8 @@ function validateMessages(value: unknown): Message[] | null {
 async function sendAlert(kind: AlertKind, input: Record<string, unknown>): Promise<string> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.ALERT_FROM_EMAIL;
-  const to = process.env.ALERT_TO_EMAIL || "info@essandohperry.com";
-  if (!apiKey || !from) return "The alert could not be sent because email alerts are not configured. Do not say this request was recorded; ask the visitor to email info@essandohperry.com.";
+  const to = process.env.ALERT_TO_EMAIL || "info@essandohperry.tech";
+  if (!apiKey || !from) return "The alert could not be sent because email alerts are not configured. Do not say this request was recorded; ask the visitor to email info@essandohperry.tech.";
 
   const subject = kind === "booking"
     ? `[Elsie] NEW BOOKING / PAYMENT — ${cleanField(input.full_name, 120)}`
@@ -173,7 +173,7 @@ async function sendAlert(kind: AlertKind, input: Record<string, unknown>): Promi
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify({ from, to: [to], subject, text: alertText }),
   });
-  if (!email.ok) return "The alert email failed to send. Do not say this request was recorded; ask the visitor to email info@essandohperry.com or contact Perry's team on WhatsApp.";
+  if (!email.ok) return "The alert email failed to send. Do not say this request was recorded; ask the visitor to email info@essandohperry.tech or contact Perry's team on WhatsApp.";
   await sendOptionalWhatsAppAlert(subject, alertText);
   return kind === "booking"
     ? "The consultation request was emailed to Perry's team. Tell the visitor exactly: A member of our team will contact you to guide you through payment and confirm your booking. Direct them to the provided WhatsApp handoff. Their booking is not final until the team confirms payment. Never share payment details or claim payment is confirmed."
@@ -268,7 +268,7 @@ async function callGemini(messages: Message[], system: string): Promise<{ reply:
     }
     history.push({ role: "user", parts: results });
   }
-  return { reply: "I have passed your request along where possible. If you need more help, email info@essandohperry.com.", whatsappHandoff };
+  return { reply: "I have passed your request along where possible. If you need more help, email info@essandohperry.tech.", whatsappHandoff };
 }
 
 async function requestGemini(apiKey: string, model: string, system: string, history: GeminiContent[]): Promise<globalThis.Response> {
