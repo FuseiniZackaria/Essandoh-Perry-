@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
-import { hero, speaking, whatsapp } from "../content/site";
+import { hero, speaking } from "../content/site";
 import { revealUp, staggerContainer, staggerItem, viewportOnce } from "../lib/motion";
-import WhatsAppButton from "./WhatsAppButton";
+import OpenChatButton from "./OpenChatButton";
 
 export default function SpeakingSection() {
   return (
@@ -73,7 +73,7 @@ export default function SpeakingSection() {
             viewport={viewportOnce}
             className="mt-10"
           >
-            <WhatsAppButton message={whatsapp.speaking} label={speaking.cta} variant="outline" />
+            <OpenChatButton label={speaking.cta} variant="outline" />
           </motion.div>
         </div>
       </div>

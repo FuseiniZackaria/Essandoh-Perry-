@@ -15,7 +15,7 @@ export default function ProjectsSection() {
             viewport={viewportOnce}
             className="text-balance text-3xl font-semibold tracking-tight text-text sm:text-5xl"
           >
-            Built. Tested. Learned.
+            Projects & practical work
           </motion.h2>
           <motion.p
             variants={revealUp}
@@ -24,8 +24,7 @@ export default function ProjectsSection() {
             viewport={viewportOnce}
             className="mt-4 text-balance leading-relaxed text-text-muted"
           >
-            Practical labs and client work that demonstrate how I actually work — each one clearly marked as either a
-            personal lab or professional engagement.
+            A selection of practical security projects, clearly labeled as lab work or client work so each project is represented accurately.
           </motion.p>
         </div>
 

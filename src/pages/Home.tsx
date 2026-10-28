@@ -6,6 +6,7 @@ import SpeakingSection from "../components/SpeakingSection";
 import WhyPerrySection from "../components/WhyPerrySection";
 import CurrentlySection from "../components/CurrentlySection";
 import CTASection from "../components/CTASection";
+import { CommunitiesSection, ConsultationSection, EventsSection, FAQSection, SectorsSection } from "../components/NewSections";
 
 export default function Home() {
   return (
@@ -13,6 +14,11 @@ export default function Home() {
       <Hero />
       <AboutSection />
       <ExpertiseSection />
+      <SectorsSection />
+      <ConsultationSection />
+      <CommunitiesSection />
+      <EventsSection />
+      <FAQSection />
       <ProjectsSection />
       <SpeakingSection />
       <WhyPerrySection />

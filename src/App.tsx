@@ -5,6 +5,8 @@ import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
+import { ChatProvider } from "./lib/chat";
+import ChatWidget from "./components/ChatWidget";
 
 function HashScroller() {
   const { hash, pathname } = useLocation();
@@ -23,7 +25,7 @@ function HashScroller() {
 
 export default function App() {
   return (
-    <>
+    <ChatProvider>
       <a href="#main" className="skip-link">
         Skip to main content
       </a>
@@ -38,6 +40,7 @@ export default function App() {
         </Routes>
       </main>
       <Footer />
-    </>
+      <ChatWidget />
+    </ChatProvider>
   );
 }

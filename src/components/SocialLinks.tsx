@@ -1,5 +1,5 @@
 import { social } from "../content/site";
-import { IconLinkedIn, IconTikTok } from "./Icons";
+import { IconLinkedIn, IconTikTok, IconYouTube } from "./Icons";
 
 interface SocialLinksProps {
   className?: string;
@@ -10,6 +10,7 @@ export default function SocialLinks({ className = "", iconClassName = "h-4 w-4" 
   const links = [
     { href: social.linkedin, label: "LinkedIn", Icon: IconLinkedIn },
     { href: social.tiktok, label: "TikTok", Icon: IconTikTok },
+    { href: social.youtube, label: "YouTube", Icon: IconYouTube },
   ];
 
   return (

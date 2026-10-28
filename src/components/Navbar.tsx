@@ -1,9 +1,9 @@
 import { useEffect, useState, type MouseEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { nav, personal, whatsapp } from "../content/site";
-import { waLink } from "../lib/whatsapp";
-import { IconArrowUpRight, IconClose, IconMenu } from "./Icons";
+import { nav, personal } from "../content/site";
+import { IconClose, IconMenu } from "./Icons";
+import OpenChatButton from "./OpenChatButton";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -19,10 +19,6 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    setOpen(false);
-  }, [location.pathname]);
-
-  useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
@@ -30,6 +26,7 @@ export default function Navbar() {
   }, [open]);
 
   function handleNavClick(e: MouseEvent<HTMLAnchorElement>, href: string) {
+    setOpen(false);
     if (location.pathname !== "/") {
       e.preventDefault();
       navigate("/" + href);
@@ -48,7 +45,7 @@ export default function Navbar() {
           scrolled ? "bg-bg/80 backdrop-blur-md border-b border-border" : "bg-transparent"
         }`}
       >
-        <Link to="/" className="flex items-center gap-3">
+        <Link to="/" onClick={() => setOpen(false)} className="flex items-center gap-3">
           <img src="/images/logo-mark.png" alt="" className="h-35 w-35 sm:h-44 sm:w-44" />
           <span className="font-mono-tight text-sm tracking-wide text-text">{personal.name}</span>
         </Link>
@@ -67,17 +64,7 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden md:block">
-          <a
-            href={waLink(whatsapp.general)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group inline-flex items-center gap-1.5 rounded-full border border-border-strong px-4 py-2 text-sm text-text transition-colors duration-300 hover:border-accent-glow"
-          >
-            {nav.cta}
-            <IconArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </a>
-        </div>
+        <div className="hidden md:block"><OpenChatButton label={nav.cta} variant="outline" className="min-h-10 px-4 py-2" /></div>
 
         <button
           type="button"
@@ -104,15 +91,7 @@ export default function Navbar() {
               </Link>
             ))}
           </nav>
-          <a
-            href={waLink(whatsapp.general)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-accent px-4 py-3 text-sm font-medium text-white"
-          >
-            {nav.cta}
-            <IconArrowUpRight className="h-3.5 w-3.5" />
-          </a>
+          <OpenChatButton label={nav.cta} variant="solid" className="mt-4 w-full" onClick={() => setOpen(false)} />
         </div>
       )}
     </motion.header>

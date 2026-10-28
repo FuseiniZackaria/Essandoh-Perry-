@@ -5,46 +5,53 @@
 
 export const personal = {
   name: "Essandoh Perry",
-  roles: ["Cybersecurity Professional", "AI Trainer", "SOC Analyst", "Public Speaker", "Mentor"],
+  roles: ["Practical AI adoption", "Cybersecurity guidance", "Career mentorship", "Speaker"],
   whatsappNumber: "233540638308",
 };
 
 export const nav = {
   links: [
-    { label: "About", href: "#about" },
-    { label: "Expertise", href: "#expertise" },
+    { label: "What I Do", href: "#expertise" },
+    { label: "Consultation", href: "#consultation" },
+    { label: "Community", href: "#communities" },
+    { label: "Events", href: "#events" },
     { label: "Projects", href: "#projects" },
-    { label: "Speaking", href: "#speaking" },
     { label: "Contact", href: "#contact" },
   ],
-  cta: "Let's Talk",
+  cta: "Book a Consultation",
 };
 
 export const whatsapp = {
   general: "Hi Essandoh Perry, I'd like to discuss working with you.",
   speaking: "Hi Essandoh Perry, I'd like to invite you to speak at an event.",
-  aiTraining: "Hi Essandoh Perry, I'm interested in AI training for my team/organization.",
+  aiTraining: "Hi Perry, I'd like to discuss using AI safely and practically in my field/team.",
   cybersecurity: "Hi Essandoh Perry, I'd like to discuss a cybersecurity project.",
   mentorship: "Hi Essandoh Perry, I'm interested in your coaching or mentorship.",
   project: "Hi Essandoh Perry, I saw your cybersecurity project and I'd like to discuss building something similar.",
+  booking: "Hi Perry's team, Elsie has helped me submit a consultation request. Please help me with the next steps.",
+  career: "Hi Perry, I'm looking for guidance as I start or grow my cybersecurity career.",
+  aiSafety: "Hi Perry, I'd like help using AI safely and understanding data and privacy risks.",
+  community: "Hi Perry, I'd like to know about joining a community.",
+  webinar: "Hi Perry, I'd like to know about registering for an upcoming webinar or seminar.",
 };
 
 export const social = {
   linkedin: "https://linkedin.com/in/perry-essandoh-cybersecurity-artificial-intelligence-public-speaking",
-  tiktok: "https://www.tiktok.com/@_cyberperry",
+  tiktok: "https://www.tiktok.com/@cyberperry",
+  youtube: "https://youtube.com/@cyberperry",
 };
 
 export const hero = {
-  eyebrow: "Cybersecurity · AI · Speaking",
-  headlineLines: ["Securing people.", "Empowering organizations.", "Building with technology."],
+  eyebrow: "Practical AI · Cybersecurity · Career guidance",
+  headlineLines: ["Use AI with confidence.", "Protect what matters.", "Build your next step."],
   supporting:
-    "Cybersecurity professional, AI trainer, SOC analyst and public speaker helping people and organizations navigate a rapidly changing digital world.",
-  ctaPrimary: "Let's Talk on WhatsApp",
+    "I help businesses and professionals bring AI into their work safely, help people already using AI understand the risks, and guide cybersecurity beginners as they build their careers.",
+  ctaPrimary: "Book a Consultation",
   ctaSecondary: "Explore My Work",
   portrait: {
     src: "/images/perry-portrait.jpg",
     srcWebp: "/images/perry-portrait.webp",
-    alt: "A Essandoh Perry speaker addressing an audience during a presentation titled 'Driving Growth Through Innovation', gesturing mid-sentence in a brown jacket and tie.",
+    alt: "Essandoh Perry speaking to an audience.",
   },
   angles: [
     { audience: "For business owners", statement: "Cybersecurity protects people, money, reputation and continuity — not just computers." },
@@ -54,13 +61,12 @@ export const hero = {
 };
 
 export const about = {
-  label: "Why I do this",
+  label: "About Perry",
   paragraphs: [
-    "My journey into cybersecurity was driven by a simple question: how many people are quietly losing everything because they don't understand the technology around them?",
-    "Seeing stories of people falling victim to cybercrime made me think beyond computers and networks.",
-    "Behind every attack is a person, a family, a business or an organization that can be affected.",
-    "That pushed me toward cybersecurity — not simply as a technical career, but as a way to help people protect themselves in an increasingly digital world.",
-    "Today, I'm also exploring the power of artificial intelligence and how organizations can use it responsibly to work smarter, solve problems and prepare for what comes next.",
+    "I help businesses and professionals understand where AI can fit into their work and how to use it thoughtfully.",
+    "For people already using AI, I offer practical guidance on safer use, including awareness of data and privacy risks.",
+    "I also support people beginning a cybersecurity career with guidance to help them take their next step.",
+    "Through consultations, learning communities, webinars, seminars and speaking, my focus is practical technology that serves people.",
   ],
   quote: "In this room, we cannot entertain ignorance.",
 };
@@ -76,7 +82,7 @@ export const expertise: ServiceItem[] = [
     code: "SEC",
     title: "Cybersecurity",
     description:
-      "Cybersecurity awareness, security assessments, SOC operations, security labs, vulnerability assessment and practical security guidance.",
+      "Practical cybersecurity guidance and awareness for people, professionals and organizations navigating digital risk.",
   },
   {
     code: "AI",
@@ -92,10 +98,55 @@ export const expertise: ServiceItem[] = [
   },
   {
     code: "MTR",
-    title: "Coaching & Mentorship",
-    description:
-      "Technical guidance, employee mentorship and practical technology education.",
+    title: "Cybersecurity Career Guidance",
+    description: "Guidance for people who are beginning their cybersecurity journey and working out what to learn and do next.",
   },
+  {
+    code: "SAFE",
+    title: "Safer AI Use",
+    description: "Understand shadow AI, data exposure and practical ways to use AI tools more safely.",
+  },
+  {
+    code: "COM",
+    title: "Learning Communities",
+    description: "Find opportunities to learn alongside others through community, webinars and seminars.",
+  },
+];
+
+export const sectors = {
+  heading: "AI in your field",
+  intro: "Explore practical, responsible ways AI may support work across these fields. Consultations are also available for people in sectors not listed; a ready-made product may not be available for every field.",
+  items: [
+    { title: "Marketing", description: "Explore practical AI use in marketing work, with responsible handling of customer and campaign information." },
+    { title: "Fashion", description: "Consider where AI could support fashion-related work while keeping human judgement and data care in view." },
+    { title: "Procurement", description: "Explore possible AI support for procurement tasks and safer ways to handle business information." },
+    { title: "Logistics", description: "Discuss practical AI use across logistics work, tailored to your role and workflows." },
+    { title: "Banking & Finance", description: "Consider AI use in banking and finance with particular care for sensitive information and human review." },
+    { title: "Cybersecurity", description: "Explore responsible AI use in cybersecurity alongside sound security and privacy practices." },
+    { title: "Secretarialship", description: "Look at ways AI may assist administrative work while protecting confidential information." },
+  ],
+};
+
+export const consultation = {
+  heading: "Let's find the right next step",
+  intro: "Start a conversation with Elsie, Perry's AI assistant. She'll learn about your field and what you'd like help with, then guide you through a consultation request.",
+  steps: ["Chat with Elsie and share what you're working on.", "Choose an online or in-person consultation.", "Perry's team will email within 24 hours to confirm a date and time."],
+  flexibility: "Scheduling is flexible. Share the times that work for you and the team will follow up by email.",
+  primary: "Chat with Elsie",
+  email: "info@essandohperry.com",
+};
+
+export interface CommunityItem { name: string; description: string; access: "free" | "paid"; price?: string }
+export const communities: CommunityItem[] = [];
+
+export interface EventItem { title: string; date: string; time: string; format: string; price?: string; description: string }
+export const events: EventItem[] = [];
+
+export const faqs = [
+  { question: "Who can book a consultation?", answer: "Businesses and professionals looking for practical AI guidance, people who want to use AI more safely, and cybersecurity beginners seeking career guidance can start by chatting with Elsie." },
+  { question: "How does a consultation request work?", answer: "Chat with Elsie, share your field and challenge, and choose online or in-person. Perry's team will email within 24 hours to confirm a suitable date and time." },
+  { question: "Can you help my organization use AI more safely?", answer: "Yes. Start with the tools and workflows your team already uses and discuss practical safeguards for sensitive information." },
+  { question: "Where can I find current community or event details?", answer: "Check the Community and Events sections for current details. If they are empty, message Perry and ask to hear when something is announced." },
 ];
 
 export type ProjectType = "LAB" | "CLIENT";
@@ -435,34 +486,35 @@ export const speaking = {
     "Cybersecurity careers",
     "Building a security-conscious culture",
   ],
-  cta: "Invite Us to Speak",
+  cta: "Invite Me to Speak",
 };
 
 export const whyPerry = {
   heading: "Why Essandoh Perry?",
   pillars: [
-    { title: "Practical", statement: "Technology should solve real problems." },
-    { title: "Human", statement: "Cybersecurity is ultimately about protecting people." },
-    { title: "Forward-thinking", statement: "AI and cybersecurity are evolving rapidly. Organizations must evolve too." },
-    { title: "Educational", statement: "Understanding technology is becoming a necessity, not a luxury." },
+    { title: "Practical", statement: "AI and cybersecurity guidance should fit your field, work and real-world needs." },
+    { title: "Safer by design", statement: "Understand data risks and make more informed decisions about the technology you use." },
+    { title: "People-first", statement: "Technology should help people and protect what matters to them." },
+    { title: "Educational", statement: "Build understanding and find a clear next step, whether you are using AI or starting in cybersecurity." },
   ],
 };
 
 export const currently = {
   label: "Currently",
-  text: "Exploring cybersecurity, AI adoption, security operations and practical technology education.",
+  text: "Helping businesses and professionals explore practical AI, supporting safer AI use, and guiding cybersecurity beginners.",
 };
 
 export const finalCta = {
-  headline: "Let's build something that matters.",
+  headline: "What would you like to work on?",
   supporting:
-    "Whether you need cybersecurity guidance, AI training, a speaker for your next event, or help turning a technical idea into something practical — let's talk.",
-  primary: "Talk on WhatsApp",
+    "Tell Elsie about your field, your goals or the challenge in front of you. She can help you explore practical AI, safer use, cybersecurity career guidance or a consultation with Perry.",
+  primary: "Book a Consultation",
   secondary: "Invite Me to Speak",
 };
 
 export const footer = {
-  tagline: "Cybersecurity · AI · Speaking",
+  tagline: "Practical AI · Cybersecurity · Speaking",
   copyright: `© ${new Date().getFullYear()} Essandoh Perry. All rights reserved.`,
+  email: "info@essandohperry.com",
   developer: { name: "CodeCraft GH", url: "https://codecraft-wheat.vercel.app/" },
 };

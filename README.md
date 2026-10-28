@@ -1,7 +1,7 @@
 # Essandoh Perry — Brand Site
 
-Premium dark-editorial site for Essandoh Perry (cybersecurity · AI · speaking).
-React + TypeScript + Tailwind CSS v4 + Framer Motion + React Router.
+Premium dark-editorial site for Essandoh Perry (practical AI · cybersecurity · speaking).
+React + TypeScript + Tailwind CSS v4 + Framer Motion + React Router, with a Vercel serverless API for Elsie.
 
 ## Getting started
 
@@ -58,6 +58,52 @@ inside `site.ts` to describe the new image.
 Update `personal.whatsappNumber` in `site.ts` (digits only, country code, no
 `+` or spaces).
 
+## Elsie AI assistant
+
+The chat UI is mounted across the site. Its Vercel function is `api/chat.ts`;
+the Anthropic API key and all provider credentials are server-only. Never use
+a `VITE_` prefix for secrets. Configure these environment variables in the
+Vercel project settings (and in a local, untracked `.env` file when testing):
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `ANTHROPIC_API_KEY` | Yes | Server-side Anthropic Messages API key |
+| `CLAUDE_MODEL` | No | Model override; defaults to `claude-sonnet-5-5` |
+| `RESEND_API_KEY` | For email alerts | Resend API key for booking/follow-up emails |
+| `ALERT_FROM_EMAIL` | For email alerts | Verified sender address |
+| `ALERT_TO_EMAIL` | No | Alert recipient; defaults to `info@essandohperry.com` |
+| `WHATSAPP_TOKEN` | Optional | WhatsApp Business API token |
+| `WHATSAPP_PHONE_ID` | Optional | WhatsApp Business phone number ID |
+| `PERRY_WHATSAPP` | Optional | Alert recipient phone number in international format |
+| `WHATSAPP_ALERT_TEMPLATE` | Optional | Approved WhatsApp template name; adapter is skipped unless all WhatsApp values are set |
+| `WHATSAPP_TEMPLATE_LANGUAGE` | Optional | Approved template language; defaults to `en` |
+| `WHATSAPP_API_VERSION` | Optional | Graph API version; defaults to `v22.0` |
+
+The API keeps a short in-memory per-IP rate limit. Serverless instances can
+restart or scale independently, so use a shared rate-limit store before
+relying on it for high-traffic production abuse protection. The chat does not
+persist conversation history. Booking and follow-up details are emailed only
+when Elsie invokes the corresponding confirmed action.
+
+### Editing Elsie's guidance
+
+Edit `api/_agent/IDENTITY.md`, `SOUL.md` and `USER.md`; these files are read
+by the server function and are not in `public/` or `src/`. Never put API keys
+or credentials in these files. The server-only guidance now reflects the supplied approved identity, tone,
+audience and alert instructions. Consultation rates appear only in
+`api/_agent/IDENTITY.md` and the server-generated alert/chat flow; do not copy
+them into website copy, React components or browser environment variables.
+Digital product names, formats by sector, prices and links and the DCHT website
+URL have not been supplied, so Elsie must not invent them.
+
+### Adding communities and events
+
+Add community entries to the `communities` array in `site.ts` with `name`,
+`description`, `access` (`free` or `paid`) and optional `price`. Add event
+entries to `events` with `title`, `date`, `time`, `format`, optional `price`
+and `description`. Both arrays intentionally start empty; do not add unconfirmed
+offerings, dates or prices. Empty states appear automatically.
+
 ## Project structure
 
 ```
@@ -67,14 +113,17 @@ src/
   components/          — reusable UI pieces
   pages/               — Home and the project detail template
   App.tsx              — routes + layout shell
+api/
+  chat.ts              — Vercel chat, booking and follow-up function
+  _agent/              — server-only Elsie guidance files
 public/
   images/              — portrait (jpg + webp)
 ```
 
 ## Deployment
 
-This is a static Vite build — it deploys to Vercel, Netlify, Cloudflare
-Pages, or any static host. Build command: `npm run build`. Output directory:
-`dist`. Because routing is client-side, configure your host to rewrite all
-paths to `/index.html` (a "SPA fallback" — Vercel/Netlify do this
 automatically for Vite projects).
+Build command: `npm run build`. Output directory: `dist`. Vercel is required
+for the included `/api/chat` serverless function; the Vercel rewrite preserves
+the API route and sends client routes to `/index.html`. Other static hosts can
+serve the site UI but need a compatible server-side API deployment for Elsie.

@@ -9,6 +9,7 @@ export default function Footer() {
         <div>
           <p className="font-mono-tight text-sm text-text">{personal.name}</p>
           <p className="mt-1 text-sm text-text-muted">{footer.tagline}</p>
+          <a className="mt-2 inline-block text-sm text-text-muted hover:text-text" href={`mailto:${footer.email}`}>{footer.email}</a>
         </div>
 
         <SocialLinks

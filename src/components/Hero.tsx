@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { hero, whatsapp } from "../content/site";
-import WhatsAppButton from "./WhatsAppButton";
+import { hero } from "../content/site";
+import OpenChatButton from "./OpenChatButton";
 import SocialLinks from "./SocialLinks";
 import { IconArrowDown } from "./Icons";
 
@@ -75,7 +75,7 @@ export default function Hero() {
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.32 }}
               className="mt-10 flex flex-wrap items-center gap-4"
             >
-              <WhatsAppButton message={whatsapp.general} label={hero.ctaPrimary} variant="solid" />
+              <OpenChatButton label={hero.ctaPrimary} variant="solid" />
               <a
                 href="#about"
                 className="group inline-flex items-center gap-2 text-sm text-text-muted transition-colors duration-300 hover:text-text"

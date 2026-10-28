@@ -1,9 +1,9 @@
 import { Link, Navigate, useParams } from "react-router-dom";
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
-import { projects, whatsapp, type ProjectDetail } from "../content/site";
+import { projects, type ProjectDetail } from "../content/site";
 import { revealUp, staggerContainer, staggerItem, viewportOnce } from "../lib/motion";
-import WhatsAppButton from "../components/WhatsAppButton";
+import OpenChatButton from "../components/OpenChatButton";
 import { IconArrowRight } from "../components/Icons";
 
 const textColor: Record<ProjectDetail["type"], string> = {
@@ -94,7 +94,7 @@ export default function ProjectDetailPage() {
           <p className="max-w-2xl text-balance leading-relaxed text-text">{project.relevance}</p>
         </Block>
 
-        <Block label="Interview preparation">
+        <Block label="Practice questions for beginners">
           <motion.div variants={staggerContainer(0.08)} initial="hidden" whileInView="show" viewport={viewportOnce} className="space-y-8">
             {(
               [
@@ -128,10 +128,10 @@ export default function ProjectDetailPage() {
           className="mt-4 flex flex-col items-start gap-6 border-t border-border pt-12 sm:flex-row sm:items-center sm:justify-between"
         >
           <div>
-            <p className="text-balance text-lg text-text">Want to build something like this?</p>
-            <p className="mt-1 text-sm text-text-muted">Let's discuss it on WhatsApp.</p>
+            <p className="text-balance text-lg text-text">Want to discuss a project?</p>
+            <p className="mt-1 text-sm text-text-muted">Tell Elsie what you have in mind.</p>
           </div>
-          <WhatsAppButton message={whatsapp.project} label="Talk on WhatsApp" variant="solid" />
+          <OpenChatButton label="Book a Consultation" variant="solid" />
         </motion.div>
 
         <div className="mt-16 border-t border-border pt-8">

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
-import { finalCta, whatsapp } from "../content/site";
+import { finalCta } from "../content/site";
 import { revealUp, viewportOnce } from "../lib/motion";
-import WhatsAppButton from "./WhatsAppButton";
+import OpenChatButton from "./OpenChatButton";
 import SocialLinks from "./SocialLinks";
 
 export default function CTASection() {
@@ -18,8 +18,8 @@ export default function CTASection() {
         <p className="mx-auto mt-6 max-w-xl text-balance leading-relaxed text-text-muted">{finalCta.supporting}</p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <WhatsAppButton message={whatsapp.general} label={finalCta.primary} variant="solid" />
-          <WhatsAppButton message={whatsapp.speaking} label={finalCta.secondary} variant="outline" />
+          <OpenChatButton label={finalCta.primary} variant="solid" />
+          <OpenChatButton label={finalCta.secondary} variant="outline" />
         </div>
 
         <div className="mt-14 flex justify-center">
