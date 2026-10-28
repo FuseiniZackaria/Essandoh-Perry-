@@ -68,7 +68,7 @@ Vercel project settings (and in a local, untracked `.env` file when testing):
 | Variable | Required | Purpose |
 | --- | --- | --- |
 | `GEMINI_API_KEY` | Yes | Server-side Google Gemini API key |
-| `GEMINI_MODEL` | No | Gemini model ID; defaults to `gemini-2.5-flash` |
+| `GEMINI_MODEL` | No | Gemini model ID; defaults to `gemini-3.5-flash-lite` |
 | `RESEND_API_KEY` | For email alerts | Resend API key for booking/follow-up emails |
 | `ALERT_FROM_EMAIL` | For email alerts | Verified sender address |
 | `ALERT_TO_EMAIL` | No | Alert recipient; defaults to `info@essandohperry.com` |

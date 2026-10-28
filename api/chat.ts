@@ -23,6 +23,12 @@ type GeminiPart = {
 type GeminiContent = { role: "model" | "user"; parts: GeminiPart[] };
 type AlertKind = "booking" | "followup";
 
+class GeminiApiError extends Error {
+  constructor(readonly status: number, readonly providerCode: string) {
+    super("Gemini API request failed");
+  }
+}
+
 const rateLimits = new Map<string, { count: number; resetAt: number }>();
 const MAX_MESSAGES = 24;
 const MAX_MESSAGE_LENGTH = 4000;
@@ -36,14 +42,14 @@ const tools = [
     name: "submit_booking",
     description: "Record a consultation booking request and alert Perry. Call only after collecting all fields and the visitor confirms.",
     parameters: {
-      type: "object",
+      type: "OBJECT",
       properties: {
-        full_name: { type: "string" },
-        contact: { type: "string", description: "Phone and/or email" },
-        sector: { type: "string" },
-        mode: { type: "string", enum: ["online", "in-person"] },
-        preferred_datetime: { type: "string" },
-        challenge: { type: "string", description: "One-line description of their challenge" },
+        full_name: { type: "STRING" },
+        contact: { type: "STRING", description: "Phone and/or email" },
+        sector: { type: "STRING" },
+        mode: { type: "STRING", enum: ["online", "in-person"] },
+        preferred_datetime: { type: "STRING" },
+        challenge: { type: "STRING", description: "One-line description of their challenge" },
       },
       required: ["full_name", "contact", "sector", "mode", "preferred_datetime", "challenge"],
     },
@@ -52,13 +58,13 @@ const tools = [
     name: "flag_for_followup",
     description: "Alert Perry that a visitor needs personal follow-up (angry client, complex case, urgent security incident, payment intent).",
     parameters: {
-      type: "object",
+      type: "OBJECT",
       properties: {
-        name: { type: "string" },
-        contact: { type: "string" },
-        reason: { type: "string" },
-        urgency: { type: "string", enum: ["normal", "high", "urgent"] },
-        summary: { type: "string" },
+        name: { type: "STRING" },
+        contact: { type: "STRING" },
+        reason: { type: "STRING" },
+        urgency: { type: "STRING", enum: ["normal", "high", "urgent"] },
+        summary: { type: "STRING" },
       },
       required: ["reason", "urgency", "summary"],
     },
@@ -219,7 +225,7 @@ async function callGemini(messages: Message[], system: string): Promise<{ reply:
     role: message.role === "assistant" ? "model" : "user",
     parts: [{ text: message.content }],
   }));
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const model = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
   let whatsappHandoff = false;
 
   for (let turn = 0; turn < 6; turn += 1) {
@@ -233,7 +239,14 @@ async function callGemini(messages: Message[], system: string): Promise<{ reply:
         generationConfig: { maxOutputTokens: 1200 },
       }),
     });
-    if (!response.ok) throw new Error("Chat provider request failed");
+    if (!response.ok) {
+      const errorBody: unknown = await response.json().catch(() => null);
+      const providerError = isRecord(errorBody) && isRecord(errorBody.error) ? errorBody.error : {};
+      const providerCode = typeof providerError.status === "string"
+        ? providerError.status
+        : typeof providerError.code === "number" ? String(providerError.code) : "UNKNOWN";
+      throw new GeminiApiError(response.status, providerCode);
+    }
     const data: unknown = await response.json();
     if (!isRecord(data) || !Array.isArray(data.candidates)) throw new Error("Unexpected chat provider response");
     const candidate = data.candidates[0];
@@ -282,7 +295,12 @@ export default async function handler(req: Request, res: Response) {
     const result = await callGemini(messages, system);
     const whatsappUrl = `https://wa.me/233540638308?text=${encodeURIComponent("Hi Perry's team, Elsie has helped me with a request. Please help me with the next steps.")}`;
     return reply(res, 200, { ...result, ...(result.whatsappHandoff ? { whatsappUrl } : {}) });
-  } catch {
+  } catch (error) {
+    // Keep diagnostics free of API keys and visitor conversations. Use the status/code
+    // in Vercel Function Logs to distinguish invalid credentials, model, quota, etc.
+    if (error instanceof GeminiApiError) {
+      console.error("Gemini API request failed", { status: error.status, providerCode: error.providerCode });
+    }
     return reply(res, 503, { error: "Elsie is temporarily unavailable." });
   }
 }
